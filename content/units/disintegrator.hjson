@@ -1,0 +1,56 @@
+type: mech
+speed: 0.25
+health: 600
+hitSize: 32
+armor: 1
+maxRange: 120
+hovering: false
+mechSideSwing: 0
+mechSideSway: 0 
+mechStride: 0 
+mechFrontSway: 0  
+moveSound: false
+tankMoveSound: false
+stepSound: false   
+accel: 0.07
+drag: 0.01  
+outlines: false
+rotateSpeed: 1
+weapons: [
+    {
+name: disintegrator-weapon
+y: 4  
+x: 0
+alwaysShooting: true  
+layerOffset: -1
+reload: 500
+recoil: 2
+recoilTime: 30
+mirror: false
+shootX: 0
+shootY: 8
+shootSound: shootEclipse
+ bullet: {
+    type: BasicBulletType
+    shootEffect: shootSmokeSquareBig
+    sprite: tes-disintegrator-bullet
+    pierce: true    
+    pierceCap: 3
+    frontColor: ff3333ff
+    backColor: ff0000ff
+    layer: 101
+    range: 120
+    damage: 500
+    lifetime: 40
+    speed: 3
+    width: 8
+    height: 12
+    smokeEffect: none
+    hitEffect: none
+    keepVelocity: false
+    hittable: false
+    recoil: 1
+  }
+
+    }
+] 

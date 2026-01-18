@@ -1,0 +1,17 @@
+type: flying
+speed: 5
+accel: 0.05
+drag: 0.01
+flying: true
+health: 2147483647
+armor: 2147483647
+itemCapacity: 200
+buildSpeed: 999999
+coreUnitDock: true
+isEnemy: false
+targetable: false
+hittable: false
+engineSize: 0
+buildRange: 99999
+weapons: []
+ 

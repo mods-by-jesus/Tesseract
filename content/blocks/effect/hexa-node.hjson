@@ -1,0 +1,13 @@
+type: CoreBlock
+name: Hexa Node
+description: A capture point core.
+unitType: tes-nucleoid
+health: 3500
+itemCapacity: 4000
+size: 3
+unitCapModifier: 0
+category: effect
+alwaysUnlocked: true
+requirements: [
+  tes-shard/500
+]

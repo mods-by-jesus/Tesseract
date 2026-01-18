@@ -1,0 +1,51 @@
+type: mech
+speed: 0.3
+health: 500
+hitSize: 8
+armor: 1
+maxRange: 32
+hovering: false
+mechSideSwing: 0
+mechSideSway: 0 
+mechStride: 0 
+mechFrontSway: 0  
+moveSound: false
+tankMoveSound: false
+stepSound: false   
+accel: 0.05
+drag: 0.01  
+outlines: false
+weapons: [
+    {
+name: overseer-weapon
+y: 0    
+x: 4
+alwaysShooting: true    
+layerOffset: -1
+reload: 300
+baseRotation: 270
+recoil: 2
+recoilTime: 30
+mirror: true
+alternate: true 
+shootX: 0
+shootY: 2
+shootSound: none
+ bullet: {
+    type: BasicBulletType
+    range: 32
+    damage: 0
+    lifetime: 0
+    speed: 0
+    width: 0
+    height: 0
+    smokeEffect: none
+    shootEffect: none
+    hitEffect: none
+    keepVelocity: false
+    hittable: false
+    spawnUnit: tes-trihedron    
+  }
+
+    }
+] 

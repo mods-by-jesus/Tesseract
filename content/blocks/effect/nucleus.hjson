@@ -1,0 +1,10 @@
+type: CoreBlock
+unitType: nucleoid
+health: 6000
+itemCapacity: 8000
+size: 5
+unitCapModifier: 999
+category: effect
+alwaysUnlocked: true
+hasShadow: false    
+drawTeamOverlay: false  

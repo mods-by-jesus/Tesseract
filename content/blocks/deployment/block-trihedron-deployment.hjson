@@ -1,0 +1,11 @@
+type: Block
+health: 50
+size: 1
+requirements: [
+    tes-shard/1
+]
+category: units
+buildCostMultiplier: 0
+hasShadow: false
+destructible: true
+breakable: true

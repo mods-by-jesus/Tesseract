@@ -1,0 +1,31 @@
+type: GenericCrafter
+name: Spire of Shards
+size: 2
+health: 200
+requirements: [
+    tes-shard/25
+]
+category: production
+craftTime: 600
+outputItem: tes-shard/1
+hasItems: true
+itemCapacity: 10
+updateEffect: none
+craftEffect: none
+drawer:
+{
+    type: DrawMulti
+    drawers:
+    [
+        {
+        type: DrawDefault
+        }
+
+        {
+        type: DrawRegion
+        suffix: -spinner
+        spinSpire: true
+        rotateSpeed: 0.5
+        }
+    ]
+}
