@@ -150,28 +150,8 @@ Events.on(BlockBuildEndEvent, e => {
         }
     }
 
-    // Check specific restrictions for Nucleus
-    if (nearestCore.block.name === "tes-nucleus") {
-        // Nucleus CANNOT deploy Trihedron or Circlet (they're for hexa-node)
-        if (unitType === "tes-trihedron" || unitType === "tes-circlet") {
-            print("RESTRICTION: Nucleus cannot deploy " + unitType);
+    // Nucleus has no restrictions - all units can be deployed
 
-            // Refund
-            if (block.requirements != null) {
-                for (let i = 0; i < block.requirements.length; i++) {
-                    const stack = block.requirements[i];
-                    nearestCore.items.add(stack.item, stack.amount);
-                }
-            }
-
-            tile.setNet(Blocks.air, team, 0);
-
-            if (e.unit != null && e.unit.isPlayer()) {
-                e.unit.getPlayer().sendMessage("[scarlet]Nucleus cannot deploy Trihedrons or Circlets! Resources refunded.");
-            }
-            return;
-        }
-    }
 
     // Within range - spawn unit (but not for spire blocks)
     if (isSpireBlock) {
