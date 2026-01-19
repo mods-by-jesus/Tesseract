@@ -15,7 +15,7 @@ stepSound: false
 weapons: [
   {
     name: none
-    reload: 20
+    reload: 60
     x: 0
     y: 0
     shootY: 0
@@ -43,7 +43,7 @@ weapons: [
     reload: 20
     x: 0
     y: 0
-    shootStatus: burning    
+    shootStatus: trihedron-decay      
     shootStatusDuration: 999
     alwaysShooting: true    
     shootY: 0

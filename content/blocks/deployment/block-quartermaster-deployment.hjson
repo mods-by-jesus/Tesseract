@@ -1,0 +1,11 @@
+type: Block
+health: 60
+size: 1
+requirements: [
+    tes-shard/7
+    tes-fragment/7
+]
+category: units
+buildCostMultiplier: 0
+research: tes-block-overseer-deployment
+alwaysUnlocked: false

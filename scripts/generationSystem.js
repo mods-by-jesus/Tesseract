@@ -2,8 +2,11 @@
 // Adds 1 shard to every core every 5 seconds
 // Displays shard income rate per second
 
-let timer = 0;
-const interval = 60 * 5; // 5 seconds (assuming 60 ticks/sec)
+let shardTimer = 0;
+const shardInterval = 60 * 5; // 5 seconds (assuming 60 ticks/sec)
+
+let fragmentTimer = 0;
+const fragmentInterval = 60 * 10; // 10 seconds
 
 // Economy tracking variables
 let lastCheckTime = 0;
@@ -17,23 +20,48 @@ Events.run(EventType.Trigger.update, () => {
     if (!Vars.state.isGame() || Vars.state.isPaused()) return;
 
     // --- GENERATION LOGIC ---
-    timer += Time.delta;
+    // Get the item definitions once per update cycle
+    const shardItem = Vars.content.getByName(ContentType.item, "tes-shard");
+    const fragmentItem = Vars.content.getByName(ContentType.item, "tes-fragment");
 
-    if (timer >= interval) {
-        timer = 0;
+    if (shardItem == null || fragmentItem == null) return; // Don't proceed if items aren't found
 
-        // Get the shard item
-        const shard = Vars.content.getByName(ContentType.item, "tes-shard");
-        if (shard != null) {
-            // Iterate through all active teams
-            Vars.state.teams.active.each(teamData => {
-                if (teamData.hasCore()) {
-                    teamData.cores.each(core => {
-                        core.items.add(shard, 1);
-                    });
+    // Update timers
+    shardTimer += Time.delta;
+    fragmentTimer += Time.delta;
+
+    // Generate shards
+    if (shardTimer >= shardInterval) {
+        shardTimer = 0;
+
+        // Add shards to all cores EXCEPT hexa-node
+        Vars.state.teams.active.each(team => {
+            const cores = Vars.state.teams.cores(team.team);
+            cores.each(core => {
+                // Skip shard generation for hexa-node
+                if (core.block.name === "tes-hexa-node") {
+                    return; // Skip this core
+                }
+
+                core.items.add(shardItem, 1);
+            });
+        });
+    }
+
+    // Generate fragments (only for hexa-node)
+    if (fragmentTimer >= fragmentInterval) {
+        fragmentTimer = 0;
+
+        // Add fragments only to hexa-node cores
+        Vars.state.teams.active.each(team => {
+            const cores = Vars.state.teams.cores(team.team);
+            cores.each(core => {
+                // Only generate fragments for hexa-node
+                if (core.block.name === "tes-hexa-node") {
+                    core.items.add(fragmentItem, 1);
                 }
             });
-        }
+        });
     }
 
     // --- RATE CALCULATION ---

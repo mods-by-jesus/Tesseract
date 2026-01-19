@@ -2,7 +2,8 @@ type: Block
 health: 60
 size: 1
 requirements: [
-    tes-shard/1
+    tes-shard/10
+    tes-fragment/5
 ]
 category: units
 buildCostMultiplier: 0

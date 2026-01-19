@@ -6,5 +6,6 @@ size: 5
 unitCapModifier: 999
 category: effect
 alwaysUnlocked: true
-hasShadow: false    
+hasShadow: true
+customShadow: true  
 drawTeamOverlay: false  

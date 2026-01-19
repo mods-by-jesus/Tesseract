@@ -4,10 +4,13 @@
 const deploymentBlocks = {
     "tes-block-trihedron-deployment": "tes-trihedron",
     "tes-block-overseer-deployment": "tes-overseer",
-    "tes-block-disintegrator-deployment": "tes-disintegrator"
+    "tes-block-disintegrator-deployment": "tes-disintegrator",
+    "tes-block-circlet-deployment": "tes-circlet",
+    "tes-block-quartermaster-deployment": "tes-quartermaster"
 };
 
 const maxDeploymentRange = 30; // tiles from core
+const hexaNodeRange = 10; // tiles from hexa node
 
 // Visual range indicator
 Events.run(EventType.Trigger.draw, () => {
@@ -32,19 +35,34 @@ Events.run(EventType.Trigger.draw, () => {
 
     // Draw range circles around each core
     cores.each(core => {
-        const radiusInWorld = maxDeploymentRange * 8; // Convert tiles to world units
+        let radiusTiles = maxDeploymentRange;
+        let shouldDraw = true;
 
-        // Draw outer circle (valid range)
-        Draw.color(team.color);
-        Draw.alpha(0.3);
-        Lines.circle(core.x, core.y, radiusInWorld);
+        if (core.block.name === "tes-hexa-node") {
+            radiusTiles = hexaNodeRange;
+            // Only draw for Hexa Node if placing Trihedron, Circlet deployment or Spire
+            if (selected.name !== "tes-block-trihedron-deployment" &&
+                selected.name !== "tes-block-circlet-deployment" &&
+                !isRestrictedBlock) {
+                shouldDraw = false;
+            }
+        }
 
-        // Draw thicker line for visibility
-        Draw.alpha(0.5);
-        Lines.stroke(2);
-        Lines.circle(core.x, core.y, radiusInWorld);
+        if (shouldDraw) {
+            const radiusInWorld = radiusTiles * 8; // Convert tiles to world units
 
-        Draw.reset();
+            // Draw outer circle (valid range)
+            Draw.color(team.color);
+            Draw.alpha(0.3);
+            Lines.circle(core.x, core.y, radiusInWorld);
+
+            // Draw thicker line for visibility
+            Draw.alpha(0.5);
+            Lines.stroke(2);
+            Lines.circle(core.x, core.y, radiusInWorld);
+
+            Draw.reset();
+        }
     });
 });
 
@@ -63,46 +81,40 @@ Events.on(BlockBuildEndEvent, e => {
     // Check if this is a deployment block or spire
     if (unitType == null && !isSpireBlock) return;
 
-    print("Deployment block placed: " + blockName);
-
     const team = e.team;
     const tileX = tile.worldx();
     const tileY = tile.worldy();
 
     // Find nearest core
-    const cores = Vars.state.teams.cores(team);
-    if (cores.isEmpty()) {
-        print("No cores found, removing block");
+    const nearestCore = Vars.state.teams.closestCore(tileX, tileY, team);
+
+    if (nearestCore == null) {
+        print("No core found, removing block");
         tile.setNet(Blocks.air, team, 0);
-        // No cores to refund to
         return;
     }
 
-    // Calculate distance to nearest core
-    let nearestDistance = 999999;
-    cores.each(core => {
-        const dist = Mathf.dst(tileX, tileY, core.x, core.y);
-        if (dist < nearestDistance) {
-            nearestDistance = dist;
-        }
-    });
+    const dist = Mathf.dst(tileX, tileY, nearestCore.x, nearestCore.y);
+    const distanceInTiles = dist / 8;
 
-    const distanceInTiles = nearestDistance / 8;
+    // Determine allowed range based on core type
+    let allowedRange = maxDeploymentRange;
+    if (nearestCore.block.name === "tes-hexa-node") {
+        allowedRange = hexaNodeRange;
+    }
 
-    print("Distance to core: " + distanceInTiles + " tiles");
+    print("Deployment: Block=" + blockName + " Core=" + nearestCore.block.name + " Dist=" + distanceInTiles + " Allowed=" + allowedRange);
 
-    // Check if too far from core
-    if (distanceInTiles > maxDeploymentRange) {
+    // Check range
+    if (distanceInTiles > allowedRange) {
         print("TOO FAR! Removing block without spawning unit");
 
         // Refund resources to nearest core
-        const nearestCore = Vars.state.teams.closestCore(tileX, tileY, team);
-        if (nearestCore != null && block.requirements != null) {
+        if (block.requirements != null) {
             for (let i = 0; i < block.requirements.length; i++) {
                 const stack = block.requirements[i];
                 nearestCore.items.add(stack.item, stack.amount);
             }
-            print("Resources refunded to core");
         }
 
         // Remove block
@@ -110,10 +122,55 @@ Events.on(BlockBuildEndEvent, e => {
 
         // Notify player
         if (e.unit != null && e.unit.isPlayer()) {
-            e.unit.getPlayer().sendMessage("[scarlet]Deployment blocks can only be placed within " +
-                maxDeploymentRange + " tiles of your core! Resources refunded.");
+            e.unit.getPlayer().sendMessage("[scarlet]Too far! Max range to core: " + allowedRange + " tiles.");
         }
         return;
+    }
+
+    // Check specific restrictions for Hexa Node
+    if (nearestCore.block.name === "tes-hexa-node") {
+        // Hexa Node can ONLY deploy Trihedron and Circlet
+        if (unitType !== "tes-trihedron" && unitType !== "tes-circlet" && !isSpireBlock) {
+            print("RESTRICTION: Hexa Node can only deploy Trihedrons and Circlets, not " + unitType);
+
+            // Refund
+            if (block.requirements != null) {
+                for (let i = 0; i < block.requirements.length; i++) {
+                    const stack = block.requirements[i];
+                    nearestCore.items.add(stack.item, stack.amount);
+                }
+            }
+
+            tile.setNet(Blocks.air, team, 0);
+
+            if (e.unit != null && e.unit.isPlayer()) {
+                e.unit.getPlayer().sendMessage("[scarlet]Hexa Node can only deploy Trihedrons and Circlets! Resources refunded.");
+            }
+            return;
+        }
+    }
+
+    // Check specific restrictions for Nucleus
+    if (nearestCore.block.name === "tes-nucleus") {
+        // Nucleus CANNOT deploy Trihedron or Circlet (they're for hexa-node)
+        if (unitType === "tes-trihedron" || unitType === "tes-circlet") {
+            print("RESTRICTION: Nucleus cannot deploy " + unitType);
+
+            // Refund
+            if (block.requirements != null) {
+                for (let i = 0; i < block.requirements.length; i++) {
+                    const stack = block.requirements[i];
+                    nearestCore.items.add(stack.item, stack.amount);
+                }
+            }
+
+            tile.setNet(Blocks.air, team, 0);
+
+            if (e.unit != null && e.unit.isPlayer()) {
+                e.unit.getPlayer().sendMessage("[scarlet]Nucleus cannot deploy Trihedrons or Circlets! Resources refunded.");
+            }
+            return;
+        }
     }
 
     // Within range - spawn unit (but not for spire blocks)

@@ -2,11 +2,9 @@ type: Block
 health: 60
 size: 1
 requirements: [
-    tes-shard/5
-    tes-fragment/5
+    tes-shard/3
 ]
 category: units
 buildCostMultiplier: 0
-hasShadow: false
-destructible: true
-breakable: true
+research: tes-block-trihedron-deployment
+alwaysUnlocked: false

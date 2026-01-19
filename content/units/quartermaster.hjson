@@ -17,23 +17,21 @@ drag: 0.01
 outlines: false
 weapons: [
     {
-name: overseer-weapon
+name: quartermaster-weapon
 autotarget: true
 controllable: false 
 targetAir: true
 targetGround: true  
-y: 0    
-x: 8
+y: 8
+x: 0
 alwaysShooting: true    
 layerOffset: -1
-reload: 300
-baseRotation: 270
+reload: 450
 recoil: 2
 recoilTime: 30
-mirror: true
-alternate: true 
+mirror: false
 shootX: 0
-shootY: 2
+shootY: 8
 shootSound: none
  bullet: {
     type: BasicBulletType
@@ -48,7 +46,7 @@ shootSound: none
     hitEffect: none
     keepVelocity: false
     hittable: false
-    spawnUnit: tes-trihedron    
+    spawnUnit: tes-circlet     
   }
 
     }
